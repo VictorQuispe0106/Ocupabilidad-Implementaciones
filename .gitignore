@@ -2,6 +2,10 @@
 config.py
 .env
 
+# Scripts CLI con credenciales hardcodeadas
+llenar_horas_automatico.py
+ver_tablas_sql.py
+
 # Python
 __pycache__/
 *.pyc
