@@ -1,0 +1,489 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes - Ocupabilidad{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-bar-chart"></i> Reportes y Estadísticas</h2>
+        <p class="text-muted">Análisis de horas y actividades por mes de todos los analistas</p>
+    </div>
+</div>
+
+<!-- Selector de Mes/Año -->
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar3"></i> Seleccionar Período</h5>
+            </div>
+            <div class="card-body">
+                <form method="GET" action="/reportes" class="row g-3 align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Mes</label>
+                        <select name="mes" class="form-select form-select-lg">
+                            <option value="1" {% if mes_seleccionado == 1 %}selected{% endif %}>Enero</option>
+                            <option value="2" {% if mes_seleccionado == 2 %}selected{% endif %}>Febrero</option>
+                            <option value="3" {% if mes_seleccionado == 3 %}selected{% endif %}>Marzo</option>
+                            <option value="4" {% if mes_seleccionado == 4 %}selected{% endif %}>Abril</option>
+                            <option value="5" {% if mes_seleccionado == 5 %}selected{% endif %}>Mayo</option>
+                            <option value="6" {% if mes_seleccionado == 6 %}selected{% endif %}>Junio</option>
+                            <option value="7" {% if mes_seleccionado == 7 %}selected{% endif %}>Julio</option>
+                            <option value="8" {% if mes_seleccionado == 8 %}selected{% endif %}>Agosto</option>
+                            <option value="9" {% if mes_seleccionado == 9 %}selected{% endif %}>Septiembre</option>
+                            <option value="10" {% if mes_seleccionado == 10 %}selected{% endif %}>Octubre</option>
+                            <option value="11" {% if mes_seleccionado == 11 %}selected{% endif %}>Noviembre</option>
+                            <option value="12" {% if mes_seleccionado == 12 %}selected{% endif %}>Diciembre</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Año</label>
+                        <select name="anio" class="form-select form-select-lg">
+                            <option value="2024" {% if anio_seleccionado == 2024 %}selected{% endif %}>2024</option>
+                            <option value="2025" {% if anio_seleccionado == 2025 %}selected{% endif %}>2025</option>
+                            <option value="2026" {% if anio_seleccionado == 2026 %}selected{% endif %}>2026</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="bi bi-search"></i> Filtrar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Resumen Rápido -->
+<div class="row mb-4" id="resumen-rapido">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2">Total Analistas</h6>
+                <h2 class="card-title mb-0" id="total-analistas">--</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2">Total Horas</h6>
+                <h2 class="card-title mb-0" id="total-horas">--</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2">Total Días Registrados</h6>
+                <h2 class="card-title mb-0" id="total-dias">--</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white shadow">
+            <div class="card-body text-center">
+                <h6 class="card-subtitle mb-2">Días del Mes</h6>
+                <h2 class="card-title mb-0" id="dias-mes">--</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficas -->
+<div class="row mb-4">
+    <!-- Gráfica 1: Horas por Analista -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-bar-chart-line"></i> Horas por Analista</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="chart-horas-analista" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráfica 2: Días que Llenó -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-check"></i> Días que Llenó Horas</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="chart-dias-llenados" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Gráfica 3: Distribución Donut -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Distribución de Horas</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="chart-donut" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Gráfica 4: Evolución Diaria -->
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Evolución Diaria</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="chart-evolucion" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <!-- Gráfica 5: Calendario Heatmap -->
+    <div class="col-md-12">
+        <div class="card shadow">
+            <div class="card-header bg-dark text-white">
+                <h5 class="mb-0"><i class="bi bi-calendar-month"></i> Calendario de Registro (██=8h completas, ░░=sin registro)</h5>
+            </div>
+            <div class="card-body" id="calendario-container">
+                <!-- Se llena dinámicamente -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla Resumen -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-table"></i> Tabla Resumen por Analista</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="tabla-resumen">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Analista</th>
+                                <th>Horas Total</th>
+                                <th>Días Registrados</th>
+                                <th>Días del Mes</th>
+                                <th>% Cumplimiento</th>
+                                <th>Promedio/Día</th>
+                                <th>% del Total</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody-resumen">
+                            <tr>
+                                <td colspan="8" class="text-center text-muted">Seleccione un mes para ver las estadísticas</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Colores para las gráficas
+    const colores = [
+        '#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0',
+        '#6f42c1', '#fd7e14', '#20c997', '#6610f2', '#d63384',
+        '#0d6efd', '#198754', '#ffc107', '#dc3545', '#0dcaf0'
+    ];
+    
+    let chartHoras = null;
+    let chartDias = null;
+    let chartDonut = null;
+    let chartEvolucion = null;
+
+    // Cargar estadísticas al cambiar mes
+    function cargarEstadisticas() {
+        const mes = document.querySelector('select[name="mes"]').value;
+        const anio = document.querySelector('select[name="anio"]').value;
+        
+        fetch(`/api/estadisticas-mes?mes=${mes}&anio=${anio}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    actualizarResumen(data);
+                    actualizarGraficas(data);
+                    actualizarTabla(data);
+                    actualizarCalendario(data);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    // Actualizar resumen rápido
+    function actualizarResumen(data) {
+        document.getElementById('total-analistas').textContent = data.analistas.length;
+        document.getElementById('total-horas').textContent = data.total_horas + ' h';
+        document.getElementById('total-dias').textContent = data.total_dias;
+        document.getElementById('dias-mes').textContent = data.dias_del_mes;
+    }
+
+    // Actualizar todas las gráficas
+    function actualizarGraficas(data) {
+        const analistas = data.analistas;
+        const nombres = analistas.map(a => a.nombre);
+        const horas = analistas.map(a => a.total_horas);
+        const dias = analistas.map(a => a.dias_registrados);
+        
+        // Gráfica 1: Horas por Analista (Barras verticales)
+        if (chartHoras) chartHoras.destroy();
+        const ctx1 = document.getElementById('chart-horas-analista').getContext('2d');
+        chartHoras = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    label: 'Horas',
+                    data: horas,
+                    backgroundColor: colores.slice(0, nombres.length),
+                    borderColor: colores.slice(0, nombres.length),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Horas' } }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Gráfica 2: Días que Llenó (Barras horizontales)
+        if (chartDias) chartDias.destroy();
+        const ctx2 = document.getElementById('chart-dias-llenados').getContext('2d');
+        chartDias = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    label: 'Días Registrados',
+                    data: dias,
+                    backgroundColor: colores.slice(0, nombres.length),
+                    borderColor: colores.slice(0, nombres.length),
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                scales: {
+                    x: { 
+                        beginAtZero: true, 
+                        max: data.dias_del_mes,
+                        title: { display: true, text: 'Días' } 
+                    }
+                },
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
+
+        // Gráfica 3: Distribución Donut
+        if (chartDonut) chartDonut.destroy();
+        const ctx3 = document.getElementById('chart-donut').getContext('2d');
+        chartDonut = new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: nombres,
+                datasets: [{
+                    data: horas,
+                    backgroundColor: colores.slice(0, nombres.length),
+                    borderColor: colores.slice(0, nombres.length),
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'right' }
+                }
+            }
+        });
+
+        // Gráfica 4: Evolución Diaria (Líneas)
+        if (chartEvolucion) chartEvolucion.destroy();
+        const ctx4 = document.getElementById('chart-evolucion').getContext('2d');
+        const evolucion = data.evolucion;
+        const datasets = [];
+        
+        Object.keys(evolucion).forEach((nombre, i) => {
+            const puntos = [];
+            for (let dia = 1; dia <= data.dias_del_mes; dia++) {
+                puntos.push(evolucion[nombre][dia] || 0);
+            }
+            datasets.push({
+                label: nombre,
+                data: puntos,
+                borderColor: colores[i % colores.length],
+                backgroundColor: colores[i % colores.length] + '33',
+                tension: 0.3,
+                fill: false
+            });
+        });
+        
+        const diasLabels = Array.from({length: data.dias_del_mes}, (_, i) => i + 1);
+        
+        chartEvolucion = new Chart(ctx4, {
+            type: 'line',
+            data: {
+                labels: diasLabels,
+                datasets: datasets
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, title: { display: true, text: 'Horas' } },
+                    x: { title: { display: true, text: 'Día del Mes' } }
+                },
+                plugins: {
+                    legend: { position: 'top' }
+                }
+            }
+        });
+    }
+
+    // Actualizar tabla resumen
+    function actualizarTabla(data) {
+        const tbody = document.getElementById('tbody-resumen');
+        tbody.innerHTML = '';
+        
+        data.analistas.forEach((a, i) => {
+            const fila = document.createElement('tr');
+            fila.innerHTML = `
+                <td>${i + 1}</td>
+                <td><strong>${a.nombre}</strong></td>
+                <td>${a.total_horas} h</td>
+                <td>${a.dias_registrados}</td>
+                <td>${data.dias_del_mes}</td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar ${a.cumplimiento >= 80 ? 'bg-success' : a.cumplimiento >= 50 ? 'bg-warning' : 'bg-danger'}" 
+                             style="width: ${a.cumplimiento}%">
+                            ${a.cumplimiento}%
+                        </div>
+                    </div>
+                </td>
+                <td>${a.promedio_dia} h</td>
+                <td>${a.porcentaje}%</td>
+            `;
+            tbody.appendChild(fila);
+        });
+    }
+
+    // Actualizar calendario heatmap
+    function actualizarCalendario(data) {
+        const container = document.getElementById('calendario-container');
+        container.innerHTML = '';
+        
+        const colores = {
+            'completo': '#198754',
+            'incompleto': '#ffc107',
+            'vacio': '#dee2e6'
+        };
+        
+        // Crear un mapa de días registrados por analista
+        const mapaDias = {};
+        data.analistas.forEach(a => {
+            mapaDias[a.nombre] = {};
+        });
+        
+        // Llenar el mapa con datos de evolución
+        Object.keys(data.evolucion).forEach(nombre => {
+            Object.keys(data.evolucion[nombre]).forEach(dia => {
+                mapaDias[nombre][parseInt(dia)] = data.evolucion[nombre][dia];
+            });
+        });
+        
+        // Crear tabla del calendario
+        const tablaWrapper = document.createElement('div');
+        tablaWrapper.style.cssText = 'overflow-x: auto; overflow-y: hidden; max-width: 100%;';
+        
+        const tabla = document.createElement('table');
+        tabla.className = 'table table-bordered table-sm';
+        tabla.style.cssText = 'width: auto; margin-bottom: 0;';
+        
+        // Encabezado
+        const thead = document.createElement('thead');
+        let headerRow = '<tr><th style="min-width: 140px; background: #6c757d; color: white; position: sticky; left: 0; z-index: 2; font-size: 0.85em; padding: 6px 8px;">Analista</th>';
+        for (let dia = 1; dia <= data.dias_del_mes; dia++) {
+            headerRow += `<th style="width: 28px; min-width: 28px; text-align: center; font-size: 0.7em; padding: 4px 2px; background: #6c757d; color: white;">${dia}</th>`;
+        }
+        headerRow += '</tr>';
+        thead.innerHTML = headerRow;
+        tabla.appendChild(thead);
+        
+        // Cuerpo
+        const tbody = document.createElement('tbody');
+        data.analistas.forEach((a, i) => {
+            let row = `<tr><td style="font-weight: bold; font-size: 0.8em; padding: 4px 8px; position: sticky; left: 0; background: #fff; z-index: 1; white-space: nowrap;">${a.nombre}</td>`;
+            for (let dia = 1; dia <= data.dias_del_mes; dia++) {
+                const horas = mapaDias[a.nombre][dia] || 0;
+                let color = colores.vacio;
+                let texto = '';
+                let titulo = `Dia ${dia}: Sin registro`;
+                
+                if (horas >= 8) {
+                    color = colores.completo;
+                    texto = horas + 'h';
+                    titulo = `Dia ${dia}: ${horas}h (completo)`;
+                } else if (horas > 0) {
+                    color = colores.incompleto;
+                    texto = horas + 'h';
+                    titulo = `Dia ${dia}: ${horas}h (incompleto)`;
+                }
+                
+                row += `<td style="background-color: ${color}; text-align: center; cursor: pointer; font-size: 0.65em; padding: 3px 1px; width: 28px; min-width: 28px;" 
+                            title="${titulo}">
+                            ${texto}
+                         </td>`;
+            }
+            row += '</tr>';
+            tbody.innerHTML += row;
+        });
+        tabla.appendChild(tbody);
+        
+        tablaWrapper.appendChild(tabla);
+        container.appendChild(tablaWrapper);
+        
+        // Leyenda
+        const leyenda = document.createElement('div');
+        leyenda.className = 'mt-2';
+        leyenda.style.cssText = 'font-size: 0.85em;';
+        leyenda.innerHTML = `
+            <span class="me-3"><span style="display: inline-block; width: 16px; height: 12px; background-color: ${colores.completo}; border-radius: 2px;"></span> 8h completas</span>
+            <span class="me-3"><span style="display: inline-block; width: 16px; height: 12px; background-color: ${colores.incompleto}; border-radius: 2px;"></span> Incompletas</span>
+            <span><span style="display: inline-block; width: 16px; height: 12px; background-color: ${colores.vacio}; border: 1px solid #ccc; border-radius: 2px;"></span> Sin registro</span>
+        `;
+        container.appendChild(leyenda);
+    }
+
+    // Cargar datos al abrir la página
+    document.addEventListener('DOMContentLoaded', function() {
+        cargarEstadisticas();
+    });
+</script>
+{% endblock %}

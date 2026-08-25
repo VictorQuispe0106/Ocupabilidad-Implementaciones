@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Horas - Ocupabilidad{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-pencil-square"></i> Registrar Horas Diarias</h2>
+        <p class="text-muted">Complete el formulario para registrar las horas de ocupabilidad del día</p>
+    </div>
+</div>
+
+{% if mensaje %}
+<div class="alert alert-{{ tipo_mensaje }} alert-dismissible fade show" role="alert">
+    {{ mensaje }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-form"></i> Formulario de Registro</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/registrar">
+                    <!-- Fecha -->
+                    <div class="mb-4">
+                        <label for="fecha" class="form-label fw-bold">Fecha de Trabajo</label>
+                        <input type="date" class="form-control form-control-lg" id="fecha" name="fecha" 
+                               value="{{ 'today' }}" required>
+                        <small class="text-muted">Deje vacío para usar la fecha de hoy</small>
+                    </div>
+
+                    <!-- Perfil (solo lectura) -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Analista</label>
+                            <input type="text" class="form-control" value="{{ perfil.nomanalista }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Oficina/Puesto</label>
+                            <input type="text" class="form-control" value="{{ perfil.nomoficina }}" readonly>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Área</label>
+                            <input type="text" class="form-control" value="{{ perfil.nomareas }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Turno</label>
+                            <input type="text" class="form-control" value="{{ perfil.nomturnos }}" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Configuración -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Horas Asignadas</label>
+                            <input type="text" class="form-control" value="8 horas" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Min. por Actividad</label>
+                            <input type="text" class="form-control" value="18 min" readonly>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Frecuencia</label>
+                            <input type="text" class="form-control" value="1 por actividad" readonly>
+                        </div>
+                    </div>
+
+                    <!-- Confirmación -->
+                    <div class="mb-4">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="commit" name="commit" value="true">
+                            <label class="form-check-label" for="commit">
+                                <strong>Confirmar guardado en base de datos</strong>
+                            </label>
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-exclamation-triangle text-warning"></i>
+                            Si no marca esta casilla, solo se realizará una simulación (dry-run)
+                        </small>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="reset" class="btn btn-outline-secondary me-md-2">
+                            <i class="bi bi-arrow-counterclockwise"></i> Limpiar
+                        </button>
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Registrar Horas
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Instrucciones</h5>
+            </div>
+            <div class="card-body">
+                <ol class="mb-0">
+                    <li class="mb-2">Seleccione la fecha del trabajo a registrar</li>
+                    <li class="mb-2">Verifique que los datos del perfil sean correctos</li>
+                    <li class="mb-2">Marque la casilla de confirmación si desea guardar</li>
+                    <li class="mb-2">Haga clic en "Registrar Horas"</li>
+                </ol>
+                <hr>
+                <p class="small text-muted mb-0">
+                    <strong>Nota:</strong> Las actividades se asignan automáticamente según la oficina/puesto configurado.
+                </p>
+            </div>
+        </div>
+
+        <div class="card shadow mt-3">
+            <div class="card-header bg-warning">
+                <h5 class="mb-0"><i class="bi bi-shield-check"></i> Modo Seguro</h5>
+            </div>
+            <div class="card-body">
+                <p class="small mb-0">
+                    Por defecto, el sistema opera en modo <strong>simulación</strong>. 
+                    Solo escribirá en la base de datos si marca la casilla de confirmación.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Establecer fecha de hoy por defecto
+    document.addEventListener('DOMContentLoaded', function() {
+        const fechaInput = document.getElementById('fecha');
+        if (fechaInput && !fechaInput.value) {
+            const today = new Date().toISOString().split('T')[0];
+            fechaInput.value = today;
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,21 @@
+# Archivos sensibles (credenciales)
+config.py
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Excel (datos personales)
+*.xlsm
+
+# Sistema
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/

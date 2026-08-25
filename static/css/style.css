@@ -1,0 +1,210 @@
+/* ============================================================================
+   ESTILOS CORPORATIVOS - APLICACIÓN DE OCUPABILIDAD
+   ============================================================================ */
+
+/* Variables CSS */
+:root {
+    --primary-color: #0d6efd;
+    --secondary-color: #6c757d;
+    --success-color: #198754;
+    --info-color: #0dcaf0;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --dark-color: #212529;
+    --light-color: #f8f9fa;
+    --corporate-blue: #003366;
+    --corporate-light: #e6f2ff;
+}
+
+/* Estilos generales */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+}
+
+/* Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+    font-size: 1.3rem;
+}
+
+/* Tarjetas */
+.card {
+    border: none;
+    border-radius: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+    font-weight: 600;
+}
+
+/* Botones */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.2s;
+}
+
+.btn-lg {
+    padding: 15px 20px;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Formularios */
+.form-control, .form-select {
+    border-radius: 8px;
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #495057;
+}
+
+/* Tablas */
+.table {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.table thead th {
+    border: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table tbody tr:hover {
+    background-color: var(--corporate-light);
+}
+
+/* Alertas */
+.alert {
+    border-radius: 8px;
+    border: none;
+}
+
+/* Tarjetas de estadísticas */
+.card.bg-primary, .card.bg-success, .card.bg-info {
+    border-radius: 12px;
+}
+
+.card.bg-primary .card-body,
+.card.bg-success .card-body,
+.card.bg-info .card-body {
+    padding: 20px;
+}
+
+/* Acciones rápidas */
+.btn-lg.py-4 {
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Footer */
+.footer {
+    margin-top: 50px;
+    padding: 20px 0;
+    background-color: var(--corporate-blue);
+    color: white;
+}
+
+/* Utilidades */
+.shadow {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .btn-lg.py-4 {
+        min-height: 80px;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .table-responsive {
+        font-size: 0.9rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para badges */
+.badge {
+    font-weight: 500;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+/* Estilos para inputs de fecha */
+input[type="date"] {
+    cursor: pointer;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.7;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+}
+
+/* Estilos para el formulario de registro */
+.form-check-input:checked {
+    background-color: var(--success-color);
+    border-color: var(--success-color);
+}
+
+/* Estilos para la tabla de registros */
+#tabla-registros tbody tr {
+    transition: background-color 0.2s;
+}
+
+#tabla-registros tbody tr:hover {
+    background-color: var(--corporate-light) !important;
+}
+
+/* Estilos para los gráficos */
+canvas {
+    max-height: 300px;
+}

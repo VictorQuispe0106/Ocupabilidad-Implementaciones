@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Ocupabilidad{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2><i class="bi bi-speedometer2"></i> Dashboard de Ocupabilidad</h2>
+        <p class="text-muted">Panel de control del sistema de registro diario</p>
+    </div>
+</div>
+
+<!-- Tarjetas de resumen -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card bg-primary text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Registros Hoy</h6>
+                        <h2 class="card-title mb-0" id="registros-hoy">--</h2>
+                    </div>
+                    <i class="bi bi-calendar-check fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-success text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Registros Este Mes</h6>
+                        <h2 class="card-title mb-0" id="registros-mes">--</h2>
+                    </div>
+                    <i class="bi bi-calendar-month fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card bg-info text-white shadow">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-subtitle mb-2">Horas Este Mes</h6>
+                        <h2 class="card-title mb-0" id="horas-mes">--</h2>
+                    </div>
+                    <i class="bi bi-clock fs-1"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones rápidas -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-lightning"></i> Acciones Rápidas</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="/registrar" class="btn btn-primary btn-lg w-100 h-100 py-4">
+                            <i class="bi bi-pencil-square fs-1 d-block mb-2"></i>
+                            <span>Registrar Horas</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/registros" class="btn btn-success btn-lg w-100 h-100 py-4">
+                            <i class="bi bi-table fs-1 d-block mb-2"></i>
+                            <span>Ver Registros</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/verificar" class="btn btn-warning btn-lg w-100 h-100 py-4">
+                            <i class="bi bi-check-circle fs-1 d-block mb-2"></i>
+                            <span>Verificar BD</span>
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/reportes" class="btn btn-info btn-lg w-100 h-100 py-4">
+                            <i class="bi bi-bar-chart fs-1 d-block mb-2"></i>
+                            <span>Reportes</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Información del perfil -->
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-person"></i> Perfil del Analista</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <td><strong>Nombre:</strong></td>
+                        <td>{{ perfil.nomanalista }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Oficina:</strong></td>
+                        <td>{{ perfil.nomoficina }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Área:</strong></td>
+                        <td>{{ perfil.nomareas }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Turno:</strong></td>
+                        <td>{{ perfil.nomturnos }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Información del Sistema</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <td><strong>Horas por día:</strong></td>
+                        <td>8 horas</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Min. por actividad:</strong></td>
+                        <td>18 minutos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Frecuencia:</strong></td>
+                        <td>1 por actividad</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Base de datos:</strong></td>
+                        <td>dashboardocupabilidad</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Cargar estadísticas al abrir el dashboard
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/api/estadisticas')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('registros-hoy').textContent = data.total_hoy;
+                    document.getElementById('registros-mes').textContent = data.total_mes;
+                    document.getElementById('horas-mes').textContent = data.horas_mes + ' h';
+                }
+            })
+            .catch(error => console.error('Error al cargar estadísticas:', error));
+    });
+</script>
+{% endblock %}
