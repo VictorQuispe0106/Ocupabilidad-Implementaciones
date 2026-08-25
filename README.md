@@ -1,140 +1,166 @@
-# Sistema de Ocupabilidad - Interfaz Web
+# Ocupabilidad - Sistema de Registro de Horas
 
-Aplicación web para el registro diario de horas de ocupabilidad. Reemplaza el formulario Excel con una interfaz visual profesional.
+Sistema web para el registro y seguimiento diario de horas de ocupabilidad del área de Implementación. Interfaz profesional con gráficas estadísticas y reportes por mes.
+
+---
 
 ## Características
 
-- ✅ **Registro de Horas**: Formulario fácil para registrar horas diarias
-- ✅ **Ver Registros**: Tabla con historial de registros
-- ✅ **Verificar BD**: Estado de conexión y tablas disponibles
-- ✅ **Reportes**: Estadísticas y gráficas de actividades
-- ✅ **Modo Seguro**: Simulación antes de guardar (dry-run)
+- **Registro de Horas** - Formulario web para registrar horas diarias
+- **Ver Registros** - Consulta de tablas `horasasignadas` y `operacion`
+- **Verificar BD** - Estado de conexión y tablas disponibles
+- **Reportes** - Gráficas comparativas por mes y por analista
+- **Modo Seguro** - Simulación antes de guardar (dry-run)
 
-## Requisitos Previos
+## Gráficas Incluidas
 
-- Python 3.8 o superior
-- Acceso a la base de datos SQL Server (red interna)
+| Gráfica | Descripción |
+|---------|-------------|
+| Horas por Analista | Barras verticales con total de horas |
+| Días que Llenó | Barras horizontales (días registrados vs días del mes) |
+| Distribución Donut | Porcentaje de horas por analista |
+| Evolución Diaria | Líneas comparativas día a día |
+| Calendario Heatmap | Vista tipo GitHub (completo/incompleto/sin registro) |
+
+---
+
+## Stack Tecnológico
+
+| Componente | Tecnología |
+|------------|------------|
+| Backend | Python 3.14 + Flask |
+| Base de Datos | SQL Server (pymssql) |
+| Frontend | HTML + Bootstrap 5 |
+| Gráficas | Chart.js |
+
+---
 
 ## Instalación
 
-1. **Clonar o descargar el proyecto**
-
-2. **Instalar dependencias**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Configurar** (opcional):
-   - Editar `config.py` para cambiar perfil, horas, o configuración de BD
-
-## Uso
-
-### Opción 1: Interfaz Web (Recomendado)
-
-1. **Iniciar el servidor**:
-   ```bash
-   python app.py
-   ```
-
-2. **Abrir en navegador**:
-   ```
-   http://localhost:5000
-   ```
-
-3. **Usar la interfaz**:
-   - **Dashboard**: Resumen y accesos rápidos
-   - **Registrar**: Formulario para registrar horas
-   - **Registros**: Ver historial
-   - **Verificar BD**: Estado de conexión
-   - **Reportes**: Estadísticas y gráficas
-
-### Opción 2: Scripts CLI (Respaldo)
-
-Los scripts originales se mantienen para uso por terminal:
+### 1. Clonar el repositorio
 
 ```bash
-# Simulación (dry-run)
-python llenar_horas_automatico.py
-
-# Guardar en BD
-python llenar_horas_automatico.py --commit
-
-# Fecha específica
-python llenar_horas_automatico.py --fecha 2026-08-25 --commit
-
-# Ver tablas
-python ver_tablas_sql.py
+git clone https://github.com/VictorQuispe0106/Ocupabilidad-Implementaciones.git
+cd Ocupabilidad-Implementaciones
 ```
+
+### 2. Instalar dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+### 3. Configurar
+
+```bash
+# Copiar el archivo de ejemplo
+cp config_example.py config.py
+```
+
+Editar `config.py` con tus datos:
+
+```python
+DB_CONFIG = {
+    "server": "TU_SERVIDOR",
+    "user": "TU_USUARIO",
+    "password": "TU_PASSWORD",
+    "database": "TU_BASE_DATOS",
+}
+
+PERFIL = {
+    "nomanalista": "Tu Nombre",
+    "nomoficina": "Tu Puesto",
+    "nomareas": "Tu Area",
+}
+
+AREA_FILTRO = "Tu Area"
+```
+
+### 4. Iniciar la aplicación
+
+```bash
+# Windows (doble clic en iniciar_app.bat)
+iniciar_app.bat
+
+# O manualmente
+python app.py
+```
+
+### 5. Abrir en navegador
+
+```
+http://localhost:5000
+```
+
+---
 
 ## Estructura del Proyecto
 
 ```
-OCUPABILIDAD AUTOMATIZACION/
-├── app.py                          # Servidor Flask principal
-├── config.py                       # Configuración centralizada
-├── requirements.txt                # Dependencias
+├── app.py                    # Servidor Flask
+├── config.py                 # Configuración (no se sube a GitHub)
+├── config_example.py         # Ejemplo de configuración
+├── requirements.txt          # Dependencias
+├── iniciar_app.bat           # Iniciar servidor + navegador
 ├── static/
-│   ├── css/style.css              # Estilos corporativos
-│   └── js/app.js                  # Lógica del frontend
+│   ├── css/style.css        # Estilos corporativos
+│   └── js/app.js            # Lógica frontend
 ├── templates/
-│   ├── base.html                  # Plantilla base
-│   ├── index.html                 # Dashboard
-│   ├── registrar.html             # Formulario de registro
-│   ├── registros.html             # Ver registros
-│   ├── verificar.html             # Verificar BD
-│   └── reportes.html              # Reportes
-├── llenar_horas_automatico.py     # Script CLI (respaldo)
-├── ver_tablas_sql.py              # Script CLI (respaldo)
-└── Formulario de Ocupabilidad v2.xlsm  # Excel original
+│   ├── base.html            # Plantilla base
+│   ├── index.html           # Dashboard
+│   ├── registrar.html       # Formulario de registro
+│   ├── registros.html       # Ver tablas
+│   ├── verificar.html       # Verificar BD
+│   └── reportes.html        # Gráficas y estadísticas
+├── AGENTS.md                # Documentación para IA
+├── README.md                # Este archivo
+└── .gitignore               # Archivos excluidos
 ```
+
+---
+
+## Páginas Disponibles
+
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Dashboard principal con resumen |
+| `/registrar` | Formulario para registrar horas |
+| `/registros` | Tabla de operacion y horasasignadas |
+| `/verificar` | Estado de conexión a la BD |
+| `/reportes` | Gráficas y estadísticas por mes |
+
+---
 
 ## Configuración
 
-Editar `config.py` para cambiar:
+| Variable | Descripción | Default |
+|----------|-------------|---------|
+| `AREA_FILTRO` | Filtra analistas por área | `"Implementación"` |
+| `MINUTOS_POR_ACTIVIDAD` | Minutos por actividad | `18` |
+| `HORAS_ASIGNADAS` | Horas diarias | `8` |
+| `APP_CONFIG["port"]` | Puerto del servidor | `5000` |
 
-- **DB_CONFIG**: Conexión a la base de datos
-- **PERFIL**: Datos del analista
-- **MINUTOS_POR_ACTIVIDAD**: Tiempo por actividad (default: 18)
-- **HORAS_ASIGNADAS**: Horas diarias (default: 8)
-- **APP_CONFIG**: Puerto y modo de la app web
+---
 
 ## Seguridad
 
-- ⚠️ **Credenciales**: Están en `config.py` (no compartir este archivo)
-- ⚠️ **Modo Seguro**: Por defecto, la app opera en simulación
-- ⚠️ **Base de datos**: Producción - cualquier cambio es irreversible
+- `config.py` contiene credenciales y **no se sube a GitHub**
+- `.gitignore` protege archivos sensibles
+- Modo seguro: por defecto solo simula (dry-run)
+
+---
 
 ## Solución de Problemas
 
-### No conecta a la BD
-- Verificar que estés en la red interna de la empresa
-- Verificar que el servidor SQL esté activo: `10.200.90.94`
-- Verificar credenciales en `config.py`
+| Problema | Solución |
+|----------|----------|
+| Python no encontrado | Reiniciar terminal después de instalar |
+| Puerto 5000 en uso | Cambiar `APP_CONFIG["port"]` en config.py |
+| No conecta a BD | Verificar red interna y credenciales |
+| Error pymssql | `pip install pymssql --no-cache-dir` |
 
-### Error al instalar pymssql
-```bash
-# En Windows, puede necesitar Visual C++ Build Tools
-pip install pymssql --no-cache-dir
-```
-
-### Puerto 5000 en uso
-Cambiar en `config.py`:
-```python
-APP_CONFIG = {
-    "port": 5001,  # u otro puerto
-    ...
-}
-```
-
-## Desarrollo
-
-Para desarrolladores que quieran modificar la aplicación:
-
-- **Backend**: `app.py` (Flask)
-- **Frontend**: `templates/` (Jinja2) + `static/` (CSS/JS)
-- **Estilos**: `static/css/style.css`
-- **Lógica JS**: `static/js/app.js`
+---
 
 ## Licencia
 
-Proyecto interno - Uso exclusivo del equipo.
+Uso interno - Área de Implementación
